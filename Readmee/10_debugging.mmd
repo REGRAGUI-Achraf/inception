@@ -1,0 +1,23 @@
+flowchart TB
+
+K["Debugging & Defense"]:::main
+K --> K1["docker ps"]
+K1 --> K2["docker logs nginx"]
+K2 --> K3["docker logs wordpress"]
+K3 --> K4["docker logs mariadb"]
+K4 --> K5["curl -k -I https://yanait-e.42.fr"]
+K5 --> K6["docker exec -it mariadb mariadb -uroot -p"]
+K6 --> K7["SELECT User, Host FROM mysql.user;"]
+
+K7 --> K8["502 Bad Gateway"]
+K8 --> K81["NGINX cannot reach WordPress/PHP-FPM"]
+
+K81 --> K9["MariaDB error 1130"]
+K9 --> K91["DB user host permission missing"]
+K91 --> K92["Fix: MYSQL_USER@'%'"]
+
+K92 --> K10["WordPress restarting"]
+K10 --> K101["Setup script failed"]
+K101 --> K102["DB not ready or credentials wrong"]
+
+classDef main fill:#111827,color:#ffffff,stroke:#38bdf8,stroke-width:2px;

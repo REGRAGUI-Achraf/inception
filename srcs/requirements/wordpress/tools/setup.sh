@@ -2,13 +2,18 @@
 
 # Read passwords from Docker secrets
 DB_PASSWORD=$(cat /run/secrets/db_password)
-WP_ADMIN_PASSWORD=$(cat /run/secrets/credentials.txt)
+DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
+WP_ADMIN_PASSWORD=$(cat /run/secrets/credentials)
 
 # Wait for MariaDB to be ready (retry loop, not infinite)
 COUNTER=0
 MAX_TRIES=30
 
-until mysqladmin ping -h mariadb --silent || [ $COUNTER -eq $MAX_TRIES ]; do
+until mysql --protocol=TCP \
+    -h mariadb \
+    -u "${MYSQL_USER}" \
+    -p"${DB_PASSWORD}" \
+    -e "SELECT 1;" >/dev/null 2>&1 || [ $COUNTER -eq $MAX_TRIES ]; do
     echo "Waiting for MariaDB to be ready... ($COUNTER/$MAX_TRIES)"
     sleep 2
     COUNTER=$((COUNTER+1))
@@ -40,16 +45,16 @@ if [ ! -f /var/www/html/wp-config.php ]; then
     wp core install \
         --url=${DOMAIN_NAME} \
         --title="Inception" \
-        --admin_user=superviseur \
-        --admin_password=${WP_ADMIN_PASSWORD} \
-        --admin_email=admin@${DOMAIN_NAME} \
+        --admin_user=superachraf \
+        --admin_password=${DB_ROOT_PASSWORD} \
+        --admin_email=superachraf@${DOMAIN_NAME} \
         --path=/var/www/html \
         --allow-root
 
-    echo "Creating second regular user..."
-    wp user create johndoe johndoe@${DOMAIN_NAME} \
+    echo "Creating regular author user..."
+    wp user create achraf achraf@${DOMAIN_NAME} \
         --role=author \
-        --user_pass=${DB_PASSWORD} \
+        --user_pass=${WP_ADMIN_PASSWORD} \
         --path=/var/www/html \
         --allow-root
 

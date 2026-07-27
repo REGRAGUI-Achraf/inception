@@ -1,0 +1,17 @@
+flowchart TB
+
+H["Volumes & Persistence"]:::main
+H --> H1["Problem: containers are ephemeral"]
+H1 --> H2["Solution: volumes"]
+H2 --> H3["WordPress volume"]
+H3 --> H4["MariaDB volume"]
+
+H3 --> H31["Host:<br/>/home/yanait-e/data/wordpress"]
+H31 --> H32["Container:<br/>/var/www/html"]
+
+H4 --> H41["Host:<br/>/home/yanait-e/data/mariadb"]
+H41 --> H42["Container:<br/>/var/lib/mysql"]
+
+H42 --> H5["Volume is mounted inside container mount namespace"]
+
+classDef main fill:#111827,color:#ffffff,stroke:#38bdf8,stroke-width:2px;

@@ -1,0 +1,37 @@
+flowchart TB
+
+G["Services"]:::main
+G --> N["NGINX Service"]:::nginx
+N --> N1["Base image: debian:bookworm"]
+N1 --> N2["Install nginx + openssl"]
+N2 --> N3["Generate self-signed certificate"]
+N3 --> N4["Listen only on 443 ssl"]
+N4 --> N5["TLSv1.2 and TLSv1.3"]
+N5 --> N6["fastcgi_pass wordpress:9000"]
+N6 --> N7["CMD nginx -g daemon off"]
+
+N7 --> W["WordPress Service"]:::wordpress
+W --> W1["Base image: debian:bookworm"]
+W1 --> W2["Install php-fpm + php-mysql"]
+W2 --> W3["Install mariadb-client"]
+W3 --> W4["Install wp-cli"]
+W4 --> W5["PHP-FPM listens on 0.0.0.0:9000"]
+W5 --> W6["Wait for MariaDB with mysqladmin ping"]
+W6 --> W7["Download WordPress if missing"]
+W7 --> W8["Create wp-config.php"]
+W8 --> W9["Install site and create users"]
+
+W9 --> M["MariaDB Service"]:::mariadb
+M --> M1["Base image: debian:bookworm"]
+M1 --> M2["Install mariadb-server"]
+M2 --> M3["bind-address = 0.0.0.0"]
+M3 --> M4["Initialize database directory"]
+M4 --> M5["Create MYSQL_DATABASE"]
+M5 --> M6["Create MYSQL_USER@'%'"]
+M6 --> M7["Grant privileges"]
+M7 --> M8["Root stays localhost"]
+
+classDef main fill:#111827,color:#ffffff,stroke:#38bdf8,stroke-width:2px;
+classDef nginx fill:#dbeafe,color:#111827,stroke:#2563eb,stroke-width:2px;
+classDef wordpress fill:#dcfce7,color:#111827,stroke:#16a34a,stroke-width:2px;
+classDef mariadb fill:#fee2e2,color:#111827,stroke:#dc2626,stroke-width:2px;

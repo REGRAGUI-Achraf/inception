@@ -1,0 +1,17 @@
+flowchart TB
+
+E["Docker Compose"]:::main
+E --> E1["docker-compose.yml = orchestration file"]
+E1 --> E2["services"]
+E2 --> E3["build context"]
+E3 --> E4["env_file .env"]
+E4 --> E5["depends_on"]
+E5 --> E6["restart: always"]
+E6 --> E7["custom bridge network"]
+E7 --> E8["persistent volumes"]
+
+E8 --> E9["ports vs expose"]
+E9 --> E91["ports<br/>published to host"]
+E91 --> E92["expose<br/>visible only inside Docker network"]
+
+classDef main fill:#111827,color:#ffffff,stroke:#38bdf8,stroke-width:2px;
