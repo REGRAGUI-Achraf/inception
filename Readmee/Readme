@@ -1,1 +1,0 @@
-Navigateur → Nginx → (si c'est un fichier .php) → PHP-FPM → exécute le code → renvoie le résultat → Nginx → Navigateur
