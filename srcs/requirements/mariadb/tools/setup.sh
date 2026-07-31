@@ -2,6 +2,16 @@
 
 INITIALIZED_MARKER="/var/lib/mysql/.initialized"
 
+# MariaDB expects a writable runtime socket directory.
+mkdir -p /run/mysqld
+chown mysql:mysql /run/mysqld
+
+# A marker without system tables means the datadir is incomplete/corrupted.
+if [ -f "$INITIALIZED_MARKER" ] && [ ! -d "/var/lib/mysql/mysql" ]; then
+    echo "MariaDB marker found but system tables are missing. Remove /home/user/data/mariadb and rebuild."
+    exit 1
+fi
+
 # Use a dedicated marker instead of the packaged datadir layout.
 if [ ! -f "$INITIALIZED_MARKER" ]; then
 

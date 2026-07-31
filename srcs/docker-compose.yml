@@ -21,6 +21,7 @@ services:
       - .env
     depends_on:
       - mariadb
+      - redis
     networks:
       - inception
     volumes:
@@ -44,6 +45,50 @@ services:
     volumes:
       - wordpress_data:/var/www/html
 
+  redis:
+    build: requirements/bonus/redis
+    restart: always
+    networks:
+      - inception
+
+  ftp:
+    build: requirements/bonus/ftp
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - wordpress
+    networks:
+      - inception
+    volumes:
+      - wordpress_data:/var/www/html
+    secrets:
+      - ftp_password
+    ports:
+      - "21:21"
+      - "21100-21110:21100-21110"
+
+  adminer:
+    build: requirements/bonus/adminer
+    restart: always
+    depends_on:
+      - mariadb
+    networks:
+      - inception
+  static-site:
+      build: requirements/bonus/static-site
+      restart: always
+      networks:
+        - inception
+      ports:
+        - "8080:8080"      
+  netdata:
+    build: requirements/bonus/netdata
+    restart: always
+    networks:
+      - inception
+    ports:
+      - "19999:19999"
 networks:
   inception:
     driver: bridge
@@ -70,3 +115,6 @@ secrets:
     file: ../secrets/db_root_password.txt
   credentials:
     file: ../secrets/credentials.txt
+  ftp_password:
+    file: ../secrets/ftp_password.txt
+

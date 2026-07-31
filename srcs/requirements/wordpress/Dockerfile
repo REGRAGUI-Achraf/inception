@@ -9,6 +9,7 @@ RUN apt-get update && \
         php-mbstring \
         php-xml \
         php-zip \
+        php-redis \
         curl \
         mariadb-client && \
     apt-get clean && \
